@@ -191,6 +191,11 @@ See web-mode-block-face."
   :type 'boolean
   :group 'web-mode)
 
+(defcustom web-mode-force-tab-indentation nil
+  "Force tab indentation."
+  :type 'boolean
+  :group 'web-mode)
+
 (defcustom web-mode-enable-sexp-functions t
   "Enable specific sexp functions."
   :type 'boolean
@@ -2507,6 +2512,9 @@ another auto-completion with different ac-sources (e.g. ac-php)")
 
   (when web-mode-enable-whitespace-fontification
     (web-mode-whitespaces-on))
+
+  (when web-mode-force-tab-indentation
+    (web-mode-use-tabs))
 
   (when web-mode-enable-sexp-functions
     (setq-local forward-sexp-function 'web-mode-forward-sexp))
@@ -6339,9 +6347,9 @@ another auto-completion with different ac-sources (e.g. ac-php)")
 
 (defun web-mode-colorize-foreground (color)
   (let* ((values (x-color-values color))
-	 (r (car values))
-	 (g (cadr values))
-	 (b (car (cdr (cdr values)))))
+         (r (car values))
+         (g (cadr values))
+         (b (car (cdr (cdr values)))))
     (if (> 128.0 (floor (+ (* .3 r) (* .59 g) (* .11 b)) 256))
 	"white" "black")))
 
@@ -6897,6 +6905,7 @@ another auto-completion with different ac-sources (e.g. ac-php)")
 (defun web-mode-use-tabs ()
   "Tweaks vars to be compatible with TAB indentation."
   (let (offset)
+    (setq indent-tabs-mode t)
     (setq web-mode-block-padding 0)
     (setq web-mode-script-padding 0)
     (setq web-mode-style-padding 0)
@@ -6904,7 +6913,7 @@ another auto-completion with different ac-sources (e.g. ac-php)")
           (cond
            ((and (boundp 'tab-width) tab-width) tab-width)
            ((and (boundp 'standard-indent) standard-indent) standard-indent)
-           (t 4)))
+           (t 8)))
     ;;    (message "offset(%S)" offset)
     (setq web-mode-attr-indent-offset offset)
     (setq web-mode-code-indent-offset offset)
